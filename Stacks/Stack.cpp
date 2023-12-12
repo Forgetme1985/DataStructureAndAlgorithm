@@ -5,21 +5,20 @@ using namespace std;
 class stack
 {
     public:
-    stack(int n)
+    stack(int size)
     {
         _numElements = 0;
-        _size = n;
-        _arrPtr = new int[_size];
+        _size = size;
+        _arrPtr = NULL;
     }
     stack(const stack& b)
     {
         _size = b._size;
-        _arrPtr = new int[_size];
-        _numElements = 0;
+        _arrPtr = new int[b._numElements];
+        _numElements = b._numElements;
         for(int i = 0; i < b._numElements;i++)
         {
            _arrPtr[i] = b._arrPtr[i];
-           _numElements++;
         }
     }
     ~stack()
@@ -30,7 +29,27 @@ class stack
     {
         if(_numElements < _size)
         {
-            _arrPtr[_numElements++] = v;
+            if(_numElements == 0)
+            {
+                _arrPtr = new int[++_numElements];
+                _arrPtr[_numElements - 1] = v;
+            }
+            else{
+                int temp[_numElements];
+                for(int i = 0; i < _numElements;i++)
+                {
+                    temp[i] = _arrPtr[i];
+                }
+                int currentNumElement = _numElements;
+                delete[] _arrPtr;
+                _arrPtr = new int[++_numElements];
+                for(int i =0; i < currentNumElement;i++)
+                {
+                    _arrPtr[i] = temp[i];
+                }
+                _arrPtr[_numElements - 1] = v;
+
+            }
         }
         else
         {
@@ -42,11 +61,22 @@ class stack
         if(_numElements > 0)
         {
             int value = _arrPtr[--_numElements];
+            int temp[_numElements];
+            for(int i = 0; i < _numElements;i++)
+            {
+                temp[i] = _arrPtr[i];
+            }
+            delete[] _arrPtr;
+             _arrPtr = new int[_numElements];
+            for(int i =0; i < _numElements;i++)
+            {
+                _arrPtr[i] = temp[i];
+            }
             return value;
         }
         else{
             cout << "stack is empty";
-            return -1;
+            return 0;
         }
     }
     void sort()
@@ -74,8 +104,8 @@ class stack
     }
     stack operator+(stack b)
     {
-        int newSize = _size + b.getSize();
-        stack newStack(newSize);
+        int numElements = _numElements + b.getNumElements();
+        stack newStack(b.getSize() + _size);
         for(int i = 0; i < _numElements;i++)
         {
             newStack.push(_arrPtr[i]);
@@ -90,9 +120,10 @@ class stack
     stack operator=(stack b)
     {
         _size = b._size;
-        _arrPtr = new int[_size];
-        _numElements = 0;
-        for(int i = 0; i < b._numElements;i++)
+        _numElements = b.getNumElements();
+        _arrPtr = new int[_numElements];
+        
+        for(int i = 0; i < _numElements;i++)
         {
            _arrPtr[i] = b._arrPtr[i];
            _numElements++;
@@ -126,23 +157,25 @@ int main()
     {
         s.push(i);
     }
-
+    s.displayElement();
     stack s1(2);
     s1.push(-5);
     s1.push(-6);
 
     cout << "Before sorting: ";
     s.displayElement();
-    cout << s.pop() << endl;
+    cout << "Pop: " << s.pop() << endl;
     cout << "After pop 1: ";
     s.displayElement();
     s.sort();
     cout << "After sorting: ";
     s.displayElement();
-    cout << s.pop() << endl;
+    cout <<"Pop: " << s.pop() << endl;
     cout << "After pop 2: ";
     s.displayElement();
 
+   // stack s2 = s;
+   // s2.displayElement();
     cout << "stack s: "; s.displayElement();
     cout << "stack s1: "; s1.displayElement();
     stack s2 = s  + s1;
